@@ -74,6 +74,12 @@
         </div>
     </nav>
 
+    <!-- Scroll to Top Button -->
+    <button id="scroll-to-top" class="scroll-to-top fixed bottom-6 right-6 z-40 bg-primary hover:bg-secondary text-white w-12 h-12 rounded-full shadow-lg hover:shadow-xl transform transition-all duration-300 opacity-0 invisible translate-y-4 hover:scale-110 group">
+        <i class="fas fa-chevron-up text-lg group-hover:animate-bounce"></i>
+        <div class="absolute inset-0 bg-primary rounded-full animate-ping opacity-20"></div>
+    </button>
+
     <!-- Home Section -->
     <section id="home" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 pt-16 sm:pt-20 transition-all duration-500">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -781,6 +787,92 @@
             input.addEventListener('focus', function() {
                 this.style.borderColor = '#2563eb';
             });
+        });
+
+        // Scroll to Top Button Functionality
+        const scrollToTopBtn = document.getElementById('scroll-to-top');
+        let scrollProgress = 0;
+
+        // Show/hide scroll to top button based on scroll position
+        function toggleScrollToTopButton() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const documentHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            scrollProgress = (scrollTop / documentHeight) * 100;
+            
+            if (scrollTop > 300) {
+                scrollToTopBtn.classList.remove('opacity-0', 'invisible', 'translate-y-4');
+                scrollToTopBtn.classList.add('opacity-100', 'visible', 'translate-y-0');
+            } else {
+                scrollToTopBtn.classList.add('opacity-0', 'invisible', 'translate-y-4');
+                scrollToTopBtn.classList.remove('opacity-100', 'visible', 'translate-y-0');
+            }
+        }
+
+        // Smooth scroll to top function
+        function scrollToTop() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > 0) {
+                // Add click animation
+                scrollToTopBtn.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    scrollToTopBtn.style.transform = '';
+                }, 150);
+                
+                // Smooth scroll with easing
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // Event listeners
+        scrollToTopBtn.addEventListener('click', scrollToTop);
+        
+        // Enhanced scroll event handler
+        let ticking = false;
+        
+        function handleScroll() {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    toggleScrollToTopButton();
+                    
+                    // Enhanced navbar scroll effect
+                    const navbar = document.querySelector('nav');
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    
+                    if (scrollTop > 100) {
+                        navbar.classList.add('bg-white/95', 'dark:bg-gray-800/95', 'backdrop-blur-sm');
+                    } else {
+                        navbar.classList.remove('bg-white/95', 'dark:bg-gray-800/95', 'backdrop-blur-sm');
+                    }
+                    
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }
+        
+        window.addEventListener('scroll', handleScroll);
+
+        // Keyboard shortcut for scroll to top (Home key)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Home' && !e.ctrlKey && !e.altKey && !e.shiftKey) {
+                e.preventDefault();
+                scrollToTop();
+            }
+            
+            // Existing theme toggle shortcut
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'D') {
+                e.preventDefault();
+                toggleTheme();
+            }
+        });
+
+        // Initialize scroll button state on page load
+        window.addEventListener('load', () => {
+            toggleScrollToTopButton();
         });
     </script>
 </body>
